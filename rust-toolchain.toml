@@ -1,0 +1,15 @@
+# Pinned toolchain. This file is the SINGLE source of truth for the Rust
+# version: CI does not name a version, it runs `rustup show` and picks this up.
+# Verified against https://releases.rs on 2026-08-16 (§39.4 reverification):
+#   stable = 1.97.1  ·  1.98.0 lands 2026-08-20  ·  edition 2024 (default since 1.85)
+#
+# `targets` carries the ARM64 Lambda target so `cargo lambda build --arm64`
+# works from a clean clone (§4 D4, §32 Phase 0 "cargo-lambda installed locally").
+# It costs ~30 s of toolchain download in CI; drop it here and run
+# `rustup target add aarch64-unknown-linux-gnu` locally if that ever matters.
+
+[toolchain]
+channel    = "1.97.1"
+profile    = "minimal"
+components = ["rustfmt", "clippy"]
+targets    = ["aarch64-unknown-linux-gnu"]

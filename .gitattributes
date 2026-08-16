@@ -1,0 +1,9 @@
+# Normalise to LF in the repository. Without this, committing from Windows
+# produces CRLF, `cargo fmt --check` passes locally and fails on the Linux CI
+# runner, and Phase 0's acceptance criterion ("a clean clone builds and tests
+# in CI") becomes machine-dependent.
+* text=auto eol=lf
+
+*.png  binary
+*.gz   binary
+*.zip  binary

@@ -1,0 +1,8 @@
+# Stable-only options. Nightly-only keys (imports_granularity, group_imports)
+# are deliberately absent: they are silently ignored on stable, which makes
+# `cargo fmt --check` pass locally and fail nowhere useful.
+edition                 = "2024"
+max_width               = 100
+newline_style           = "Unix"
+use_field_init_shorthand = true
+use_try_shorthand       = true

@@ -1,0 +1,10 @@
+/target/
+**/*.rs.bk
+
+# AWS SAM build artefacts (Phase 6)
+.aws-sam/
+
+# Secrets must live in SSM Parameter Store (§27), never in the repo.
+.env
+*.pem
+credentials

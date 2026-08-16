@@ -1,0 +1,73 @@
+# Job Monitor — workspace root (virtual manifest).
+#
+# Layout and the crate dependency graph below are FROZEN by
+# JOB_MONITOR_MASTER_SPEC.md §17. Do not add a dependency edge that the §17
+# table forbids: the edges here are the architecture, mechanically enforced.
+#
+#   errors    -> (nothing)
+#   core      -> errors                                   PURE, SYNC, NO I/O
+#   ports     -> core, errors                             trait definitions only
+#   adapters  -> core, errors                             pure bytes -> Vec<RawJob>
+#   engine    -> core, ports, adapters, errors            async orchestration
+#   infra     -> core, ports, adapters, engine, errors    concrete impls + AWS/HTTP
+#   lambda    -> everything                               wiring only
+#   admin     -> core, ports, infra, errors               source CRUD
+#
+# NOTE ON PACKAGE NAMES: §17 shows directories (crates/core, crates/errors, ...).
+# The directories match §17 exactly. The Cargo *package* names are prefixed
+# `jobmon-` because a package literally named `core` shadows the sysroot `core`
+# crate in the extern prelude, which breaks `use core::fmt` and derive-macro
+# resolution workspace-wide. See README.md "Deviations from §17".
+
+[workspace]
+resolver = "3"
+members = [
+    "crates/errors",
+    "crates/core",
+    "crates/ports",
+    "crates/adapters",
+    "crates/engine",
+    "crates/infra",
+    "bin/lambda",
+    "bin/admin",
+]
+
+[workspace.package]
+version      = "0.1.0"
+edition      = "2024"
+rust-version = "1.97"
+publish      = false
+
+# Single place to pin every version used anywhere in the workspace.
+# Third-party dependencies are added here as each phase needs them; an entry
+# declared here costs nothing until a member opts in with `foo.workspace = true`.
+[workspace.dependencies]
+jobmon-errors   = { path = "crates/errors" }
+jobmon-core     = { path = "crates/core" }
+jobmon-ports    = { path = "crates/ports" }
+jobmon-adapters = { path = "crates/adapters" }
+jobmon-engine   = { path = "crates/engine" }
+jobmon-infra    = { path = "crates/infra" }
+
+[workspace.lints.rust]
+# Nothing in this system needs unsafe. Forbidding it now means no future phase
+# can quietly introduce it.
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+# Intentionally empty at Phase 0. `clippy::all` is on by default and CI runs
+# with `-D warnings`, so the default set is already a hard gate.
+
+# Release profile tuned for Lambda cold start + package size (§12: ARM64,
+# 512 MB, 60 s). Harmless at Phase 0; correct by the time bin/lambda is built.
+#
+# Deliberately NOT set here: `panic = "abort"`. It is a Phase 6 decision, not a
+# Phase 0 default, because (a) it forecloses wrapping per-source processing in
+# catch_unwind so that one panicking source cannot abort a whole tick and block
+# the other 29 claimed sources, and (b) it breaks `#[should_panic]` tests under
+# `cargo test --release`.
+[profile.release]
+opt-level     = 3
+lto           = "thin"
+codegen-units = 1
+strip         = true

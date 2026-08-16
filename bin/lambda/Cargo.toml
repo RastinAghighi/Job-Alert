@@ -1,0 +1,17 @@
+[package]
+name         = "lambda"
+version.workspace      = true
+edition.workspace      = true
+rust-version.workspace = true
+publish.workspace      = true
+
+[lints]
+workspace = true
+
+[dependencies]
+jobmon-core.workspace = true
+jobmon-ports.workspace = true
+jobmon-adapters.workspace = true
+jobmon-engine.workspace = true
+jobmon-infra.workspace = true
+jobmon-errors.workspace = true
