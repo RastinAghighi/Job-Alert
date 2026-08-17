@@ -19,3 +19,13 @@ pub mod normalize;
 pub mod plausibility;
 pub mod schedule;
 pub mod shape;
+
+/// Re-exported from `jobmon-errors` (§9).
+///
+/// `SourceId` has to be defined there because [`jobmon_errors::PipelineError`]
+/// carries an `Option<SourceId>` and §17 makes that crate the dependency leaf —
+/// defining it here would require an `errors -> core` edge and produce a cycle.
+/// The re-export is what lets every downstream crate write `jobmon_core::SourceId`
+/// alongside the rest of the domain model instead of having to know that one
+/// identity type lives somewhere else.
+pub use jobmon_errors::SourceId;
