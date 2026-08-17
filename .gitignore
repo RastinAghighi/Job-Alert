@@ -8,3 +8,6 @@
 .env
 *.pem
 credentials
+
+# Local-only project documents; never tracked or uploaded.
+/documents/
