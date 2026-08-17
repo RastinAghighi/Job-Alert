@@ -69,8 +69,21 @@ data-encoding   = "2"
 unsafe_code = "forbid"
 
 [workspace.lints.clippy]
-# Intentionally empty at Phase 0. `clippy::all` is on by default and CI runs
-# with `-D warnings`, so the default set is already a hard gate.
+# Empty at Phase 0 by intent. `clippy::all` is on by default and CI runs
+# with `-D warnings`, so the default set is already a hard gate. Phase 1 adds
+# exactly one exception, below.
+#
+# `PipelineError` intentionally carries §9's structured diagnostic `Detail` by
+# value, which puts it at ~296 bytes against this lint's 128-byte threshold.
+# Boxing it, or shrinking `Detail`, would change canonical interfaces and durable
+# schema solely to satisfy a size heuristic: every §17.1 port signature returns
+# `Result<_, PipelineError>` by value, and §9 fixes `Detail`'s field set exactly.
+# Errors are constructed on failure paths only, never in a hot loop.
+#
+# This exception lives here, once, rather than as an `#![allow]` in each crate:
+# lint attributes do not cross crate boundaries and every crate in the graph
+# returns `Result<_, PipelineError>`.
+result_large_err = "allow"
 
 # Release profile tuned for Lambda cold start + package size (§12: ARM64,
 # 512 MB, 60 s). Harmless at Phase 0; correct by the time bin/lambda is built.

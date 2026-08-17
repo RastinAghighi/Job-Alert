@@ -13,3 +13,9 @@ workspace = true
 # re-exports `SourceId` from here.
 [dependencies]
 serde.workspace = true
+
+# Tests only. The §13.2.3 wire names are durable schema, so `as_str()` and the
+# serde representation are asserted equal rather than assumed equal; that needs a
+# serde format. `serde_json` must NOT become a real dependency of this crate.
+[dev-dependencies]
+serde_json.workspace = true
