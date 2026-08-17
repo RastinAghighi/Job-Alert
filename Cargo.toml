@@ -49,6 +49,20 @@ jobmon-adapters = { path = "crates/adapters" }
 jobmon-engine   = { path = "crates/engine" }
 jobmon-infra    = { path = "crates/infra" }
 
+# Third-party, added by Phase 1 (§32) for the domain model and the §13.2.1
+# event-identity encoder.
+#
+# `chrono` is deliberately built WITHOUT its default features, and in particular
+# without `clock`: §32 requires every current time to enter pure `core` as an
+# explicit argument, and `clock` would make `Utc::now()` reachable from inside
+# the domain crate. `std` (which implies `alloc`) plus `serde` is all §13.2.1's
+# RFC 3339 encoding and the persisted model need.
+serde           = { version = "1", features = ["derive"] }
+serde_json      = "1"
+chrono          = { version = "0.4", default-features = false, features = ["std", "serde"] }
+sha2            = "0.10"
+data-encoding   = "2"
+
 [workspace.lints.rust]
 # Nothing in this system needs unsafe. Forbidding it now means no future phase
 # can quietly introduce it.

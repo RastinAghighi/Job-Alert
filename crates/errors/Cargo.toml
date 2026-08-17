@@ -8,4 +8,8 @@ publish.workspace      = true
 [lints]
 workspace = true
 
+# §9/§17: this crate is the dependency leaf. It may depend on nothing but `std`
+# and `serde` — an edge to `jobmon-core` would be a cycle, because `core`
+# re-exports `SourceId` from here.
 [dependencies]
+serde.workspace = true
