@@ -1,5 +1,5 @@
 /target/
-**/*.rs.bkk
+**/*.rs.bkl
 
 # AWS SAM build artefacts (Phase 6)
 .aws-sam/
